@@ -58,10 +58,10 @@ class DatasetInstance:
             
             # print('[Info] size of {} : {}'.format(folder, frameNum))
 
-            if frameNum <= config.maxFramePerVideo:
+            if frameNum <= config.MaxFramePerVideo:
                 interval = 1
             else:
-                interval = int(frameNum / config.maxFramePerVideo)
+                interval = int(frameNum / config.MaxFramePerVideo)
 
             # print('frameNum: {}'.format(frameNum))
             # print('interval: {}'.format(interval))
@@ -87,11 +87,11 @@ class Dataset:
     def __init__(self, dataType, batchSize, imageSize, norm):
         
         if dataType == 'train':
-            splitData = pd.read_json(config.trainSplitFile, dtype=False)
+            splitData = pd.read_json(config.TrainSplitFile, dtype=False)
         elif dataType == 'test':
-            splitData = pd.read_json(config.testSplitFile, dtype=False)
+            splitData = pd.read_json(config.TestSplitFile, dtype=False)
         elif dataType == 'eval':
-            splitData = pd.read_json(config.evalSplitFile, dtype=False)
+            splitData = pd.read_json(config.EvalSplitFile, dtype=False)
 
         realVideos, fakeVideos = get_files_from_split(splitData)
         realVideos = sorted(realVideos)

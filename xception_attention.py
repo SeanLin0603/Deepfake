@@ -23,8 +23,6 @@ import torch.utils.model_zoo as model_zoo
 from torch.nn import init
 import torch
 
-import config
-
 # ImageNet pretrain weight
 # model_urls = {
 #     'xception':'https://www.dropbox.com/s/1hplpzet9d7dv29/xception-c0a72b38.pth.tar?dl=1'
@@ -202,8 +200,7 @@ class Model:
         self.model = Xception(num_classes=classes)
         
         if load_pretrain:
-            print('[Info] Loading model from pretrain model: {0}'.format(config.PretrainWeight))
-            state_dict = torch.load(config.PretrainWeight)
+            state_dict = torch.load('./xception-b5690688.pth')
             for name in state_dict:
                 if 'pointwise' in name:
                     state_dict[name] = state_dict[name].unsqueeze(-1).unsqueeze(-1)
@@ -211,8 +208,6 @@ class Model:
             del state_dict['fc.bias']
 
             self.model.load_state_dict(state_dict, strict=False)
-        else:
-            print('[Info] Train from scratch.')
 
 
     def save(self, epoch, optim, model_dir):

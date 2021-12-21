@@ -76,7 +76,7 @@ if __name__ == "__main__":
     torch.cuda.manual_seed_all(seed)
 
     print("[Info] Loading dataset")
-    testData = Dataset('test', config.testBatchSize, config.ImageSize, config.Norm)
+    testData = Dataset('test', config.TestBatchSize, config.ImageSize, config.Norm)
     print("[Info] Built dataset\n\n")
 
     net = Model(load_pretrain=False)

@@ -39,6 +39,10 @@ def eval(epoch):
 
   testPath = os.path.join(config.ModelDir, str(epoch))
   print('[Info] Result dir: {}'.format(testPath))
+  if not os.path.exists(testPath):
+    print('[Info] Directory do not exist: {}'.format(testPath))
+    return
+  
   testFiles = glob.glob(testPath + '/*.mat')
   testNum = len(testFiles)
 
