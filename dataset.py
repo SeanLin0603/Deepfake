@@ -1,7 +1,7 @@
-from imageio import imread
 import os
 import random
 from imutils import paths
+from imageio import imread
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms

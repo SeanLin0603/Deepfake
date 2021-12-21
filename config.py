@@ -1,10 +1,16 @@
 
 
 
-DataRoot = '/home/sean/faceforensic/'
+DataRoot = '/home/sean/Documents/Forensics/'
 ModelDir = './result/'
 
-BatchSize = 10
+trainSplitFile = '/home/sean/Documents/Forensics/splits/train.json'
+testSplitFile = '/home/sean/Documents/Forensics/splits/test.json'
+evalSplitFile = '/home/sean/Documents/Forensics/splits/val.json'
+
+
+trainBatchSize = 10
+testBatchSize = 110
 
 LastEpoch = 0
 MaxEpoch = 10
@@ -14,3 +20,4 @@ WeightDecay = 0.01
 
 ImageSize = (299, 299)
 Norm = [[0.5] * 3, [0.5] * 3]
+maxFramePerVideo = 100

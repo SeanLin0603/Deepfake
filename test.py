@@ -2,14 +2,13 @@ import numpy as np
 import os
 import random
 from scipy.io import savemat
-import shutil
 import torch
-import torch.optim as optim
 import torch.nn as nn
 import warnings
 warnings.filterwarnings("ignore")
 
-from dataset import Dataset
+# from dataset import Dataset
+from dataset_ff import Dataset
 from xception import Model
 import config
 
@@ -30,10 +29,10 @@ def process_batch(batch):
 def run_epoch(index):
     print('Epoch: {0}'.format(index))
 
-    step = 0
     realTestLoader = testData.datasets[0].loader
     fakeTestLoader = testData.datasets[1].loader
 
+    step = 0
     # Real
     for batch in realTestLoader:
         img = batch['img'].cuda()
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     torch.cuda.manual_seed_all(seed)
 
     print("[Info] Loading dataset")
-    testData = Dataset('test', config.BatchSize, config.ImageSize, config.Norm, seed)
+    testData = Dataset('test', config.testBatchSize, config.ImageSize, config.Norm)
     print("[Info] Built dataset\n\n")
 
     net = Model(load_pretrain=False)
@@ -94,4 +93,4 @@ if __name__ == "__main__":
         net.load(epoch, config.ModelDir)
         run_epoch(epoch)
 
-    print('Testing complete')
+    print('Test completed.')

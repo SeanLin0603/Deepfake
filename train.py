@@ -8,7 +8,8 @@ import torch.nn as nn
 import warnings
 warnings.filterwarnings("ignore")
 
-from dataset import Dataset
+# from dataset import Dataset
+from dataset_ff import Dataset
 from xception import Model
 import config
 
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     torch.cuda.manual_seed_all(seed)
 
     print("[Info] Loading dataset")
-    trainData = Dataset('train', config.BatchSize, config.ImageSize, config.Norm, seed)
+    trainData = Dataset('train', config.trainBatchSize, config.ImageSize, config.Norm)
     print("[Info] Built dataset\n\n")
 
     net = Model(load_pretrain=True)
@@ -84,4 +85,5 @@ if __name__ == "__main__":
     
     for epoch in range(config.LastEpoch, config.MaxEpoch):
         run_epoch(epoch)
-        pass
+    print('Train completed.')
+    
