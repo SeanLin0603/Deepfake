@@ -9,7 +9,7 @@ from torchvision import transforms
 import config
 
 class DatasetInstance:
-    def __init__(self, labelName, label, dataType, imageSize, norm, seed, batchSize):
+    def __init__(self, labelName, label, dataType, imageSize, norm, batchSize):
         self.imageSize = imageSize
         
         self.transform = transforms.Compose([
@@ -59,8 +59,8 @@ class DatasetInstance:
         return len(self.images)
 
 class Dataset:
-    def __init__(self, dataType, batchSize, imageSize, norm, seed):
-        realData = DatasetInstance('real', 0, dataType, imageSize, norm, seed, batchSize)
-        fakeData = DatasetInstance('fake', 1, dataType, imageSize, norm, seed, batchSize)
+    def __init__(self, dataType, batchSize, imageSize, norm):
+        realData = DatasetInstance('real', 0, dataType, imageSize, norm, batchSize)
+        fakeData = DatasetInstance('fake', 1, dataType, imageSize, norm, batchSize)
         
         self.datasets = [realData, fakeData]

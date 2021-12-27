@@ -9,8 +9,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # from dataset import Dataset
-from dataset_ff import Dataset
 from xception import Model
+
+from dataset_ff import Dataset
+# from xception_attention import Model
 import config
 
 
@@ -20,6 +22,7 @@ def process_batch(batch, mode):
         
         image = batch['img']
         label = batch['lab']
+        # pred, mask, vector = net.model(image)
         pred = net.model(image)
 
         # calc loss

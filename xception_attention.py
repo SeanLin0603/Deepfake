@@ -17,11 +17,14 @@ normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5],
 The resize parameter of the validation transform should be 333, and make sure to center crop at 299x299
 """
 import math, os
+from pandas.core.indexing import convert_from_missing_indexer_tuple
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 from torch.nn import init
 import torch
+
+import config
 
 # ImageNet pretrain weight
 # model_urls = {
@@ -93,6 +96,16 @@ class Block(nn.Module):
         x+=skip
         return x
 
+class RegressionMap(nn.Module):
+  def __init__(self, c_in):
+    super(RegressionMap, self).__init__()
+    self.c = SeparableConv2d(c_in, 1, 3, stride=1, padding=1, bias=False)
+    self.s = nn.Sigmoid()
+
+  def forward(self, x):
+    mask = self.c(x)
+    mask = self.s(mask)
+    return mask, None
 
 
 class Xception(nn.Module):
@@ -106,11 +119,10 @@ class Xception(nn.Module):
             num_classes: number of classes
         """
         super(Xception, self).__init__()
-
         
         self.num_classes = num_classes
 
-        self.conv1 = nn.Conv2d(3, 32, 3,2, 0, bias=False)
+        self.conv1 = nn.Conv2d(3, 32, 3, 2, 0, bias=False)
         self.bn1 = nn.BatchNorm2d(32)
         self.relu = nn.ReLU(inplace=True)
 
@@ -143,6 +155,7 @@ class Xception(nn.Module):
 
         self.fc = nn.Linear(2048, num_classes)
 
+        self.map = RegressionMap(728)
 
 
         #------- init weights --------
@@ -155,12 +168,8 @@ class Xception(nn.Module):
                 m.bias.data.zero_()
         #-----------------------------
 
-
-
-
-
-    def forward(self, x):
-        x = self.conv1(x)
+    def features(self, input):
+        x = self.conv1(input)
         x = self.bn1(x)
         x = self.relu(x)
         
@@ -175,6 +184,11 @@ class Xception(nn.Module):
         x = self.block5(x)
         x = self.block6(x)
         x = self.block7(x)
+        
+        # calc mask
+        mask, vector = self.map(x)
+        x = x * mask 
+
         x = self.block8(x)
         x = self.block9(x)
         x = self.block10(x)
@@ -187,20 +201,27 @@ class Xception(nn.Module):
         
         x = self.conv4(x)
         x = self.bn4(x)
-        x = self.relu(x)
+        return x, mask, vector
 
+    def logits(self, featrues):
+        x = self.relu(featrues)
         x = F.adaptive_avg_pool2d(x, (1, 1))
         x = x.view(x.size(0), -1)
         x = self.fc(x)
-
         return x
+
+    def forward(self, x):
+        x, mask, vector = self.features(x)
+        x = self.logits(x)
+        return x, mask, vector
 
 class Model:
     def __init__(self, classes=2, load_pretrain=True):
         self.model = Xception(num_classes=classes)
         
         if load_pretrain:
-            state_dict = torch.load('./xception-b5690688.pth')
+            print('[Info] Loading model from pretrain model: {0}'.format(config.PretrainWeight))
+            state_dict = torch.load(config.PretrainWeight)
             for name in state_dict:
                 if 'pointwise' in name:
                     state_dict[name] = state_dict[name].unsqueeze(-1).unsqueeze(-1)
@@ -208,6 +229,8 @@ class Model:
             del state_dict['fc.bias']
 
             self.model.load_state_dict(state_dict, strict=False)
+        else:
+            print('[Info] Train from scratch.')
 
 
     def save(self, epoch, optim, model_dir):
