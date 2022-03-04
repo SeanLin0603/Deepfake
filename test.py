@@ -9,7 +9,10 @@ warnings.filterwarnings("ignore")
 
 # from dataset import Dataset
 from dataset_ff import Dataset
-from xception import Model
+
+# from xception import Model
+from xception_unsuper import Model
+
 import config
 
 def process_batch(batch):

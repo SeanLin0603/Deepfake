@@ -9,7 +9,8 @@ import config
 from utils import get_files_from_split
 
 RealSets = ['RealFF']
-FakeSets = ['Deepfakes', 'Face2Face', 'FaceSwap', 'NeuralTextures']
+# FakeSets = ['Deepfakes', 'Face2Face', 'FaceSwap', 'NeuralTextures']
+FakeSets = ['Deepfakes']
 
 class DatasetInstance:
     def __init__(self, labelName, label, dataType, fileList, imageSize, norm, batchSize):
